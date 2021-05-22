@@ -18,9 +18,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/companies/index', function () {
-    $users = DB::select('select * from companies');
-    return view('companies.index',compact($users));
-});
+//Route::get('/companies/index', function () {
+//    $companies = DB::select('select * from companies');
+//    $name = "behruzjon";
+//    return view('companies.index',compact('companies'));
+//});
 
-//Route::get('companies/index','Company@index');
+Route::get('/companies','App\Http\Controllers\CompaniesController@index');
+Route::get('/companies/{show}','App\Http\Controllers\CompaniesController@show');
+Route::get('/test','App\Http\Controllers\TestController@index');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

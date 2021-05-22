@@ -5,8 +5,10 @@ services:
   app:
     build:
       context: .
+      args:
+        HTTP_PROXY: ${ENV_PROXY}
       dockerfile: Dockerfile
-    image: digitalocean.com/php
+    image: php:7.3-fpm
     container_name: app
     restart: unless-stopped
     tty: true
@@ -19,19 +21,17 @@ services:
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
-    ports:
-      - 6001:6001
 
   #Nginx Service
-  webserver_new:
+  webserver:
     image: nginx:alpine
-    container_name: webserverr
+    container_name: webserver
     restart: unless-stopped
     tty: true
     ports:
-      - 80:80
-      - 8090:8090
-
+      - "8080:80"
+      - "8443:443"
+      - "8090:80"
     volumes:
       - ./:/var/www
       - ./nginx/conf.d/:/etc/nginx/conf.d/
@@ -40,12 +40,12 @@ services:
 
   #MySQL Service
   db:
-    image: mysql:5.7.22
+    image: mysql:5.7.24
     container_name: db
     restart: unless-stopped
     tty: true
     ports:
-      - "3309:3306"
+      - "33061:3306"
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: root
@@ -58,10 +58,11 @@ services:
       - app-network
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_bot
     links:
       - db:db
     ports:
-      - 8002:80
+      - 8001:80
     environment:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
